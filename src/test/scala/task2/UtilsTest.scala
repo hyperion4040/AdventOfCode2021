@@ -1,5 +1,6 @@
+package task2
+
 import org.scalatest.flatspec.AnyFlatSpec
-import task2.Utils
 
 class UtilsTest extends AnyFlatSpec {
 
