@@ -52,7 +52,7 @@ object UtilsTask4 {
     val re = markValueInList(numbers.head, list)
     var result = 0
 
-    val seq = re.map{
+    re.map{
       el => el.grouped(5).map{
         ek => if(ek.count(_.marked == true) == 5){
           val res = el.filter(_.marked == false)
@@ -62,10 +62,46 @@ object UtilsTask4 {
       }.toSeq
     }
 
+    val res =  horizontalCheck(re, numbers.head)
+    result += res
+
     result match {
       case 0 => compute(numbers.tail, re)
       case _ => result
     }
+  }
+
+  private def horizontalCheck(re: Seq[Seq[Pole]], number: Int): Int = {
+    var result = 0
+    (1 to 5).foreach{
+      n =>
+        result += filterColumn(re, n, number)
+    }
+
+    result
+
+  }
+
+  private def filterColumn(re: Seq[Seq[Pole]], n: Int, numbers: Int): Int = {
+    var result = 0
+  
+    re.map {
+      el => {
+        val ma = el.zipWithIndex
+          .filter { case (_, i) => (i + n) % 5 == 0 }
+          .map { case (e, _) => e }
+
+           if(ma.count(_.marked == true) == 5){
+            val res = el.filter(_.marked == false)
+            val rek = res.map(_.value).sum
+            result = rek * numbers
+          }
+        }
+
+    }
+
+    result
+
   }
 
   private def markValueInList(number: Int, list: Seq[Seq[Pole]]) = {

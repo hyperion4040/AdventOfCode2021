@@ -13,4 +13,9 @@ class UtilsTask4Test extends AnyFlatSpec {
     val result = UtilsTask4.bingo(path)
     assert(result == 4512)
   }
+
+  it should "bingoReal" in {
+    val result = UtilsTask4.bingo(realPath)
+    assert(result == 4512)
+  }
 }
