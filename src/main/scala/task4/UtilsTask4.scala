@@ -50,29 +50,22 @@ object UtilsTask4 {
 
   def compute( numbers: Seq[Int], list: Seq[Seq[Pole]] ): Int = {
     val re = markValueInList(numbers.head, list)
-    var result = 0;
-    re.sliding(5).map{
-       el => el.map{
-         es => es.sliding(5).map{
-           t => if(t.count(_.marked == true) == 5){
-             val res = es.filter(_.marked == false)
-             val rek = res.map(_.value).sum
-             println(rek + " " + numbers.head)
-             rek * numbers.head
-           }else {
-             compute(numbers.tail,re)
-           }
-         }
+    var result = 0
 
-       }
+    val seq = re.map{
+      el => el.grouped(5).map{
+        ek => if(ek.count(_.marked == true) == 5){
+          val res = el.filter(_.marked == false)
+          val rek = res.map(_.value).sum
+          result = rek * numbers.head
+        }
+      }.toSeq
     }
 
-    /*result match {
-      case 0 => if(numbers.size == 1) result else compute(numbers.tail,re)
+    result match {
+      case 0 => compute(numbers.tail, re)
       case _ => result
-    }*/
-
-
+    }
   }
 
   private def markValueInList(number: Int, list: Seq[Seq[Pole]]) = {
