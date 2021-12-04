@@ -6,7 +6,7 @@ class UtilsTask3Test extends AnyFlatSpec {
 
   behavior of "UtilsTask3Test"
 
-  val path = "src/test/resources/task3/test.csv"
+  val path = "src/test/resources/task3/test.txt"
   val realPath = "src/test/resources/task3/input.csv"
 
   it should "computePowerConsumption" in {

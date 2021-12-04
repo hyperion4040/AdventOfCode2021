@@ -4,7 +4,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 
 class UtilsTest extends AnyFlatSpec {
 
-  val resourcesPath = "src/test/resources/task2/test.csv"
+  val resourcesPath = "src/test/resources/task2/test.txt"
   val resources = "src/test/resources/task2/input.csv"
 
   it should "test" in {
