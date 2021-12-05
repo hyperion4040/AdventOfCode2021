@@ -15,7 +15,7 @@ object UtilsTask4 {
   val as = ActorSystem()
   implicit val materializer = Materializer(as)
 
-  def bingo(filePath: String): Int = {
+  def bingo(filePath: String, firstWin: Boolean): Int = {
     val source = FileIO.fromPath(Paths.get(filePath))
 
     val flow1 = Framing
@@ -44,30 +44,35 @@ object UtilsTask4 {
     val numbers = Await.result(list, 10.seconds).flatten
     val result = Await.result(grid, 10.seconds)
 
-    compute(numbers, result);
+    val response =  compute(numbers, result, Seq.empty[Int]);
 
+    val li = response.filter(el => el != 0)
+    if(firstWin) li.head else li.last
   }
 
-  def compute( numbers: Seq[Int], list: Seq[Seq[Pole]] ): Int = {
+  def compute( numbers: Seq[Int], list: Seq[Seq[Pole]] , results: Seq[Int]): Seq[Int] = {
+    var result = results
+    var toRemove = Seq.empty[Pole]
+    if(numbers.isEmpty || list.isEmpty ) return result
     val re = markValueInList(numbers.head, list)
-    var result = 0
 
     re.map{
       el => el.grouped(5).map{
-        ek => if(ek.count(_.marked == true) == 5){
+        ek => if(ek.count(_.marked == true) == 5) {
           val res = el.filter(_.marked == false)
           val rek = res.map(_.value).sum
-          result = rek * numbers.head
+          result = result :+ rek * numbers.head
+          toRemove = el
         }
       }.toSeq
     }
 
-    val res =  horizontalCheck(re, numbers.head)
-    result += res
+    val newList = if(toRemove != Seq.empty[Pole]) re.filterNot(el => el == toRemove) else re
+
+    result = result :+ horizontalCheck(newList, numbers.head)
 
     result match {
-      case 0 => compute(numbers.tail, re)
-      case _ => result
+      case _ => compute(numbers.tail, newList, result)
     }
   }
 
@@ -84,17 +89,18 @@ object UtilsTask4 {
 
   private def filterColumn(re: Seq[Seq[Pole]], n: Int, numbers: Int): Int = {
     var result = 0
-  
+    var toRemove = 0;
     re.map {
       el => {
         val ma = el.zipWithIndex
           .filter { case (_, i) => (i + n) % 5 == 0 }
           .map { case (e, _) => e }
 
-           if(ma.count(_.marked == true) == 5){
+           if(ma.count(_.marked == true) == 5 && re.size == 1){
             val res = el.filter(_.marked == false)
             val rek = res.map(_.value).sum
             result = rek * numbers
+             toRemove = el.filter((_.marked == false)).map(_.value).sum
           }
         }
 
