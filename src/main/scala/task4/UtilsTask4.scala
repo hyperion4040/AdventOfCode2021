@@ -52,7 +52,7 @@ object UtilsTask4 {
 
   def compute( numbers: Seq[Int], list: Seq[Seq[Pole]] , results: Seq[Int]): Seq[Int] = {
     var result = results
-    var toRemove = Seq.empty[Pole]
+    var toRemove:Seq[Seq[Pole]] = Seq.empty
     if(numbers.isEmpty || list.isEmpty ) return result
     val re = markValueInList(numbers.head, list)
 
@@ -62,34 +62,43 @@ object UtilsTask4 {
           val res = el.filter(_.marked == false)
           val rek = res.map(_.value).sum
           result = result :+ rek * numbers.head
-          toRemove = el
+          toRemove = toRemove :+ el
         }
       }.toSeq
     }
 
-    val newList = if(toRemove != Seq.empty[Pole]) re.filterNot(el => el == toRemove) else re
+    var newList = if(toRemove.size != 0) re.filterNot(el => el == toRemove) else re
 
-    result = result :+ horizontalCheck(newList, numbers.head)
+    val check = horizontalCheck(newList, numbers.head)
+    result = result :+ check._1
+    toRemove = check._2
+
+    newList = if(toRemove.size != 0) re.filterNot(el => el == toRemove) else re
 
     result match {
       case _ => compute(numbers.tail, newList, result)
     }
   }
 
-  private def horizontalCheck(re: Seq[Seq[Pole]], number: Int): Int = {
+  private def horizontalCheck(re: Seq[Seq[Pole]], number: Int): (Int,Seq[Seq[Pole]]) = {
     var result = 0
+    var toRemove:Seq[Seq[Pole]] = Seq.empty
     (1 to 5).foreach{
-      n =>
-        result += filterColumn(re, n, number)
+      n => {
+        val check = filterColumn(re,n, number)
+        result += check._1
+        toRemove = toRemove :+ check._2
+      }
+
     }
 
-    result
+    (result,toRemove)
 
   }
 
-  private def filterColumn(re: Seq[Seq[Pole]], n: Int, numbers: Int): Int = {
+  private def filterColumn(re: Seq[Seq[Pole]], n: Int, numbers: Int): (Int,Seq[Pole]) = {
     var result = 0
-    var toRemove = 0;
+    var toRemove = Seq.empty[Pole]
     re.map {
       el => {
         val ma = el.zipWithIndex
@@ -100,13 +109,13 @@ object UtilsTask4 {
             val res = el.filter(_.marked == false)
             val rek = res.map(_.value).sum
             result = rek * numbers
-             toRemove = el.filter((_.marked == false)).map(_.value).sum
+             toRemove = el
           }
         }
 
     }
 
-    result
+    (result, toRemove)
 
   }
 
