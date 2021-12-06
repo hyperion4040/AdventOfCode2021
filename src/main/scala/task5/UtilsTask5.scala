@@ -27,7 +27,7 @@ object UtilsTask5 {
     }
   }
 
-  def compute(pointPairs: Seq[PointPair]): Int = {
+  def compute(pointPairs: Seq[Point]): Int = {
 
       val grid = Grid(
         for {
@@ -35,12 +35,34 @@ object UtilsTask5 {
           y <- 0 to 9
         } yield Elem(x,y)
       )
+      val temp = pointPairs
+    println(temp)
+      /*val t = Grid(
+        pointPairs.flatMap {
+          temp =>
+            grid.elements.map {
+              el => if (updateElemCondition(temp, el)) Elem(el.xPos, el.yPos, el.value + 1) else el
+            }
+        }
+      )*/
+      val result = Grid(grid.elements.map {
+        el => Elem(el.xPos, el.yPos, updateElemValue(pointPairs, el))
+      })
 
-      println(grid.elements.size)
-    1
+      println(result)
+
+
+    result.elements.count(_.value >= 2)
   }
 
 
+  private def updateElemValue(points: Seq[Point], el: Elem): Int = {
+    points.map{
+      point => if(el.xPos == point.x && el.yPos == point.y) 1 else 0
+    }.sum
+
+
+  }
 }
 
 case class Grid(elements: Seq[Elem])
