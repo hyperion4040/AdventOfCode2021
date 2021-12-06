@@ -1,5 +1,6 @@
 package task5
 
+
 import scala.io.Source
 
 object UtilsTask5 {
@@ -24,10 +25,41 @@ object UtilsTask5 {
 
   }
 
+  def prepareAllPointsFromPairs(pointPairs: Seq[PointPair]): Seq[Point] = {
+    pointPairs.filter(pointPair => pointPair.start.x == pointPair.end.x || pointPair.start.y == pointPair.end.y)
+      .flatMap {
+      pointPair => preparePointsFromPair(pointPair)
+    }
+  }
+
+  def prepareAllDiagonalPointsFromPairs(pointPairs: Seq[PointPair]): Seq[Point] = {
+    pointPairs.filterNot(pointPair => pointPair.start.x == pointPair.end.x || pointPair.start.y == pointPair.end.y)
+      .flatMap{
+        pointPair => prepareDiagonalPointsFromPair(pointPair)
+      }
+  }
+
+  def prepareDiagonalPointsFromPair(pointPair: PointPair): Seq[Point] = {
+
+    val xPos: Seq[Int] = for {
+      x <- Math.min(pointPair.start.x,pointPair.end.x) to Math.max(pointPair.start.x,pointPair.end.x)
+    } yield x
+
+    val yPos: Seq[Int] = for {
+            y <- Math.min(pointPair.start.y, pointPair.end.y) to Math.max(pointPair.start.y, pointPair.end.y)
+    } yield y
+
+    val xRes =  if(xPos.head != pointPair.start.x) xPos.reverse else xPos
+    val yRes =  if(yPos.head != pointPair.start.y) yPos.reverse else yPos
+    (xRes zip yRes).map (el => (Point(el._1,el._2)))
+
+  }
+
   def preparePointsFromPair(pointPair: PointPair): Seq[Point] = {
+
     for {
-      x <- pointPair.start.x to pointPair.end.x
-      y <- pointPair.start.y to pointPair.end.y
+      x <- Math.min(pointPair.start.x,pointPair.end.x) to Math.max(pointPair.start.x,pointPair.end.x)
+      y <- Math.min(pointPair.start.y, pointPair.end.y) to Math.max(pointPair.start.y, pointPair.end.y)
     } yield Point(x,y)
   }
 
@@ -37,29 +69,26 @@ object UtilsTask5 {
     }
   }
 
-  def compute(pointPairs: Seq[Point]): Int = {
+  def compute(pointPairs: Seq[Point], gridSize: Int = 9): Int = {
 
       val grid = Grid(
         for {
-          x <- 0 to 9
-          y <- 0 to 9
+          y <- 0 to gridSize
+          x <- 0 to gridSize
         } yield Elem(x,y)
       )
       val temp = pointPairs
-    println(temp)
-      /*val t = Grid(
-        pointPairs.flatMap {
-          temp =>
-            grid.elements.map {
-              el => if (updateElemCondition(temp, el)) Elem(el.xPos, el.yPos, el.value + 1) else el
-            }
-        }
-      )*/
+//    println(temp)
+
       val result = Grid(grid.elements.map {
         el => Elem(el.xPos, el.yPos, updateElemValue(pointPairs, el))
       })
 
-      println(result)
+//      println(result.elements.filter(_.value == 2))
+
+//      println(result.elements)
+//    println()
+//      result.elements.map(_.value).grouped(10).toSeq.foreach(println)
 
 
     result.elements.count(_.value >= 2)
