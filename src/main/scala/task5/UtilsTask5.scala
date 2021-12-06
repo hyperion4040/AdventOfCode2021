@@ -4,10 +4,13 @@ import scala.io.Source
 
 object UtilsTask5 {
 
-  def preparePointPair(filePath: String): Seq[PointPair] = {
+  def getLinesFromFile(filePath: String): List[String] = {
     val source = Source.fromFile(filePath)
 
-     val lines =  source.getLines.toList
+    source.getLines.toList
+  }
+
+  def preparePointPair(lines: List[String]): Seq[PointPair] = {
 
     lines.map {
       line => {
@@ -19,6 +22,13 @@ object UtilsTask5 {
       }
     }
 
+  }
+
+  def preparePointsFromPair(pointPair: PointPair): Seq[Point] = {
+    for {
+      x <- pointPair.start.x to pointPair.end.x
+      y <- pointPair.start.y to pointPair.end.y
+    } yield Point(x,y)
   }
 
   private def createPoint(pointCoordinates: String) = {
