@@ -30,6 +30,7 @@ class SevenSegmentSearchTest extends AnyFlatSpec {
     val preSeq = SevenSegmentSearch.prepareData(data)
 
     val result = SevenSegmentSearch.computeAll(preSeq)
+        assert(result.sum == 61229)
     assert(result.head ==  8394)
     assert(result(1) ==  9781)
     assert(result(2) == 1197)
@@ -43,6 +44,24 @@ class SevenSegmentSearchTest extends AnyFlatSpec {
 
 
 //    assert(result == 61229)
+  }
+
+  it should "compute Real part 2 problematic lines 2" in {
+    val data = "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"
+    val dataNew = "acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | dab cefabd cdfgeb eafb cagedb ab"
+    val preSeq = SevenSegmentSearch.prepareData(List(dataNew))
+
+    val result = SevenSegmentSearch.computeForSingle(preSeq.head)
+    assert(result == 796401)
+  }
+
+
+  it should "compute Real part 2 problematic lines" in {
+    val data = SevenSegmentSearch.getData(testPath)
+    val preSeq = SevenSegmentSearch.prepareData(data)
+
+    val result = SevenSegmentSearch.computeForSingle(preSeq(7))
+    assert(result == 1625)
   }
 
   it should "compute Real part 2" in {

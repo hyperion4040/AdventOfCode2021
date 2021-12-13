@@ -52,7 +52,7 @@ object SevenSegmentSearch {
 
   }
 
-  private def computeForSingle(line: Segment):Int = {
+  def computeForSingle(line: Segment):Int = {
     line.digits.map {
       value =>
         value.length match {
@@ -80,9 +80,12 @@ object SevenSegmentSearch {
   }
 
   def isFive(value: String, segments: Seq[String]): Boolean = {
-    val te = segments.filter(el => el.length == 2 || el.length == 4)
+    val te = segments.filter(el => el.length == 4 || el.length == 2)
 
-    val test = te.head.diff(te(1))
+    val first = if(te.head.length > te.last.length) te.head else te.last
+    val second = if(te.head.length < te.last.length) te.head else te.last
+
+    val test = first.diff(second)
 
     val check = isCorrect(value.toSet) _
 
@@ -100,11 +103,11 @@ object SevenSegmentSearch {
   def isZero(value: String, segments: Seq[String]): Boolean = {
     val in = segments.filter(el => el.length == 7).head.toSeq
 
-    val inter = value.intersect(in)
+    val inter = in.diff(value)
 
     val chek = isCorrect(segments.filter(el => el.length == 2).head.toSet) _
 
-    chek(inter)
+    !chek(inter)
 
   }
 
