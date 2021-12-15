@@ -28,6 +28,33 @@ object SmokeBasin {
     result
   }
 
+
+  def computeBasins(lowPoints: Seq[HeatPoint], elements: Seq[HeatPoint]): Seq[Int] = {
+    val aroundPoints = List(-1,1)
+
+    lowPoints.head match {
+      case el => aroundPoints.flatMap{
+       point => {
+         elements.find(_.xPos == el.xPos + point).map(_.value ) ++ elements.find(_.yPos == el.yPos + point)
+       }
+      }
+    }
+
+    Seq(1,1)
+  }
+
+  def computeBasin(elements: Seq[HeatPoint], numberOfLines: Int): Int = {
+    val lines = 0 to numberOfLines
+
+    val lowPoints = lines.flatMap{
+      el => computeLine(elements, el)
+    }.filter(_.lowPoint == true)
+
+    val basins: Seq[Int] = computeBasins(lowPoints, elements)
+
+    basins.sum
+  }
+
   def compute(elements: Seq[HeatPoint], numberOfLines: Int) : Int = {
 
     val lines = 0 to numberOfLines
